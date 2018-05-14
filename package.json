@@ -1,0 +1,20 @@
+{
+  "name": "generator-polymer-element",
+  "version": "1.0.0",
+  "description": "A Component generator for polymer elements",
+  "dependencies": {
+    "yeoman-generator": "^2.0.4"
+  },
+  "devDependencies": {},
+  "files": [
+    "app"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "author": "Andreas K. Hahn",
+  "license": "ISC"
+}

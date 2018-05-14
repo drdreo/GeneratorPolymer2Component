@@ -1,0 +1,83 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../style-modules/<%= props.name %>-styles.html">
+
+<dom-module id="<%= props.prefixedName %>">
+  <template>
+    <style include="<%= props.name %>-styles"></style>
+	<div class="<%= props.prefixedName %>">
+		<slot></slot>
+	</div>
+  </template>
+
+	<script>
+
+	class <%= props.className %> extends Polymer.Element {
+	  static get is() {
+		    return '<%= props.prefixedName %>';
+	  }
+	  <% if (props.attributes && props.attributes[0] && props.attributes[0].length !== 0 ) { %>
+	  static get properties() {
+  		return {
+  			<% props.attributes.forEach(function(prop){ %>
+  				<%= prop %>: String,
+  			  <% }); %>
+  		};
+	  }
+	  static get observedAttributes() {
+			return [<%- props.attributes.map(attr => `'${attr}'`).join(','); %>];
+		}
+
+    attributeChangedCallback(attr, oldValue, newValue) {
+				switch (attr) {
+
+          <% props.attributes.forEach(function(attr){ %>
+
+					case '<%= attr %>':
+  						if (this.readyFired) {
+  							this.setContainerClass(newValue, "<%= attr %>");
+  						} else {
+  							this.initClassAttr.push("<%= attr %>");
+  						}
+            break;
+              <% }); %>
+
+					default:
+						break;
+				}
+			}
+	  <% } %>
+
+	  constructor() {
+			super();
+			this.readyFired = false; // checks if ready already fired
+      this.wrapperSelector = ".<%= props.prefixedName %>";
+
+			this.initClassAttr = [];
+		}
+
+		ready() {
+			super.ready();
+			this.readyFired = true;
+
+			// set the class for every attribute that has been initialized before ready fired
+			this.initClassAttr.forEach((el) => {
+				this.setContainerClass("any value", el);
+			});
+		}
+
+		// Sets the container divs class depending on the attribute value passed
+		// usage: this.setContainerClass("", "dark");
+		setContainerClass(attrVal, className) {
+			if (attrVal != null) {
+				this.shadowRoot.querySelector(this.wrapperSelector).classList.add(className);
+			} else {
+				this.shadowRoot.querySelector(this.wrapperSelector).classList.remove(className);
+			}
+		}
+
+
+	}
+	customElements.define(<%= props.className %>.is, <%= props.className %>); // I'm not global anymore due to webpack.
+	window.<%= props.className %> = <%= props.className %>; // Now I'm global again! Needed, to be able to extend it in other components. https://github.com/webpack-contrib/polymer-webpack-loader#shimming
+	</script>
+</dom-module>
